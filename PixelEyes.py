@@ -198,39 +198,6 @@ class PixelEyes:
         self.changeExpression(0)
         frame = Frame(self.window)
         frame.pack()
-        eyes = self.store.emotion
-        eyesB = self.rightEye()
-        for i, row in enumerate(EYES.get(eyes, ())):
-            for j, col in enumerate(row):
-                if col:
-                    self._cursor_pos = prop.width * 0.30 - DOT_WIDTH*7/2
-                    self._line_pos = prop.height * 0.5 - DOT_HEIGHT*7/2
-                    self.eyeL.append(self.head.create_rectangle( self._cursor_pos + j * DOT_WIDTH,
-                                      self._line_pos + i * DOT_HEIGHT,
-                                      self._cursor_pos + (j + 1) * DOT_WIDTH,
-                                      self._line_pos + (i + 1) * DOT_HEIGHT,
-                                      fill = '#60b6d5'
-                                    ))
-
-                    self._cursor_pos = prop.width * 0.70 - DOT_WIDTH*7/2
-                    if eyes == eyesB:
-                        self.eyeR.append(self.head.create_rectangle( self._cursor_pos + j * DOT_WIDTH,
-                                        self._line_pos + i * DOT_HEIGHT,
-                                        self._cursor_pos + (j + 1) * DOT_WIDTH,
-                                        self._line_pos + (i + 1) * DOT_HEIGHT,
-                                        fill = '#60b6d5'
-                                      ))
-        if eyes != eyesB:
-            for i, row in enumerate(EYES.get("AngryB", ())):
-                for j, col in enumerate(row):
-                    if col:
-                        self._cursor_pos = prop.width * 0.70 - DOT_WIDTH*7/2
-                        self.eyeL.append(self.head.create_rectangle( self._cursor_pos + j * DOT_WIDTH,
-                                        self._line_pos + i * DOT_HEIGHT,
-                                        self._cursor_pos + (j + 1) * DOT_WIDTH,
-                                        self._line_pos + (i + 1) * DOT_HEIGHT,
-                                        fill = '#60b6d5'
-                                      ))
 
 
     def reset(self):
