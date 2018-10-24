@@ -371,6 +371,8 @@ class PixelEyes:
     def delPupille(self):
         self.head.delete(self.eyeL[-1])
         self.head.delete(self.eyeR[-1])
+        self.eyeL = self.eyeL[:-1]
+        self.eyeR = self.eyeR[:-1]
 
     def drawPupille(self, bool):
         # On rempli un carré pour chaque yeux
