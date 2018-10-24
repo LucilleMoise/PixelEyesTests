@@ -272,26 +272,6 @@ class PixelEyes:
         self.lastOffsetX = offsetX
         self.lastOffsetY = offsetY
 
-
-
-    def calculPupillex(self):
-        sourisx = self.window.winfo_pointerx()
-        if sourisx >= 0 & sourisx <= 1440:
-            xWindowPercent = sourisx/1440 * 100
-            xEyePos = round(xWindowPercent / 100 * 6)
-            return xEyePos
-        else:
-            return -1
-
-    def calculPupilley(self):
-        sourisy = self.window.winfo_pointery()
-        if sourisy >= 0 & sourisy <= 900:
-            yWindowPercent = sourisy/900 * 100
-            yEyePos = round(yWindowPercent / 100 * 6)
-            return yEyePos
-        else:
-            return -1
-
     def calculPupille(self):
         yEyePos = 3
         xEyePos = 3
