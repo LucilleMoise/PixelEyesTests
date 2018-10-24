@@ -26,6 +26,7 @@ class ArthurStore:
         self.listIPsConnected = []
         self.resetEmotion = True
         self.emotion = "neutral"
+        self.durationEmotion = 0
         #Variable peremettant de savoir si on a vue quelqu'un mais pas reconnu
         self.personSeenButNotRecognize = False
         # Image de la personne reconnu

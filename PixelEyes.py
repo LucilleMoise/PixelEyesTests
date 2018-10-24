@@ -150,7 +150,6 @@ class PixelEyes:
     def _initWindow(self):
         self.window = Tk()
         self.window.attributes('-fullscreen', self.guiProp.fullscreen)
-        # self.window = Toplevel(self.window)
 
     def _initCanvas(self):
         self.head = Canvas(
@@ -179,15 +178,21 @@ class PixelEyes:
         if self.store.resetEyes:
             self.reset()
             self.store.resetEyes = False
-
-        self.resetRectangle()
+        self.drawPupille(True)
+        #self.delPupille()
+        #self.resetRectangle()
         self.changeExpression(lastDuration)
-            # self.store.resetEmotion = False
+        if self.store.resetEmotion:
+            self.resetRectangle()
+            self._initEyes()
+            self.store.resetEmotion = False
         self.window.update_idletasks()
         self.window.update()
         # print("refresh")
 
+
     def _initEyes(self):
+        print("INIT EYES")
         prop = self.guiProp
         self.lastOffsetX = 0.0
         self.lastOffsetY = 0.0
@@ -232,6 +237,7 @@ class PixelEyes:
                                         fill = '#60b6d5'
                                       ))
 
+        self.drawPupille(False) # de 0 à 6
 
     def reset(self):
         self.positionEyesX = 0.0
@@ -242,9 +248,6 @@ class PixelEyes:
 
     def _initEvents(self):
         self.shutdown = False
-
-    def computeEyesPosition(self):
-        prop = self.guiProp
 
     def applyNewEyesPosition(self):
         # t = Label(self.window, text="nik ta race", fg="red")
@@ -291,13 +294,12 @@ class PixelEyes:
             return -1
 
     def calculPupille(self):
-
         yEyePos = 3
         xEyePos = 3
         sourisx = self.window.winfo_pointerx()
         sourisy = self.window.winfo_pointery()
-        if sourisx >= 0 & sourisx <= self.guiProp.width:
-            if sourisy >= 0 & sourisy <= self.guiProp.height:
+        if 0 <= sourisx <= self.guiProp.width:
+            if 0 <= sourisy <= self.guiProp.height:
                 xWindowPercent = sourisx / self.guiProp.width * 100
                 yWindowPercent = sourisy / self.guiProp.height * 100
                 xEyePos = round(xWindowPercent / 100 * 6)
@@ -309,70 +311,112 @@ class PixelEyes:
         self.changeEmotion()
         pupillePos = self.calculPupille()
 
-        self.pointer.set(str(self.window.winfo_pointerx()) + " " + str(self.window.winfo_pointery()))
+        self.pointer.set(str(self.window.winfo_pointerx())
+                         + " "
+                         + str(self.window.winfo_pointery())
+                         + " "
+                         + str(self.guiProp.width)
+                         + " "
+                         + str(self.guiProp.height)
+                         )
         self.posPupille.set(str(pupillePos['x']) + " " + str(pupillePos['y']))
         eyes = self.store.emotion
         eyesB = self.rightEye()
 
-        for i, row in enumerate(EYES.get(eyes, ())):
-            for j, col in enumerate(row):
-                if self.store.emotion == 'neutral' and self.durationEmotion <= 0:
-                    if col & (j != pupillePos['x']) | col & (i != pupillePos['y']):
-                        self._cursor_pos = self.guiProp.width * 0.30 - DOT_WIDTH * 7 / 2
-                        self._line_pos = self.guiProp.height * 0.5 - DOT_HEIGHT * 7 / 2
-                        self.eyeL.append(self.head.create_rectangle(self._cursor_pos + j * DOT_WIDTH,
-                                                                    self._line_pos + i * DOT_HEIGHT,
-                                                                    self._cursor_pos + (j + 1) * DOT_WIDTH,
-                                                                    self._line_pos + (i + 1) * DOT_HEIGHT,
-                                                                    fill='#60b6d5'
-                                                                    ))
+        if self.store.emotion != 'neutral':
+            self.resetRectangle()
 
-                        self._cursor_pos = self.guiProp.width * 0.70 - DOT_WIDTH * 7 / 2
-                        #if eyes == eyesB:
-                        self.eyeR.append(self.head.create_rectangle(self._cursor_pos + j * DOT_WIDTH,
-                                                                    self._line_pos + i * DOT_HEIGHT,
-                                                                    self._cursor_pos + (j + 1) * DOT_WIDTH,
-                                                                    self._line_pos + (i + 1) * DOT_HEIGHT,
-                                                                    fill='#60b6d5'
-                                                                    ))
-                else:
-                    self.durationEmotion -= lastDuration
-                    if self.durationEmotion <= 0:
-                        self.store.emotion = "neutral"
-                    if col:
-                        self._cursor_pos = self.guiProp.width * 0.30 - DOT_WIDTH * 7 / 2
-                        self._line_pos = self.guiProp.height * 0.5 - DOT_HEIGHT * 7 / 2
-                        self.eyeL.append(self.head.create_rectangle(self._cursor_pos + j * DOT_WIDTH,
-                                                                    self._line_pos + i * DOT_HEIGHT,
-                                                                    self._cursor_pos + (j + 1) * DOT_WIDTH,
-                                                                    self._line_pos + (i + 1) * DOT_HEIGHT,
-                                                                    fill='#60b6d5'
-                                                                    ))
-
-                        self._cursor_pos = self.guiProp.width * 0.70 - DOT_WIDTH * 7 / 2
-                        if eyes == eyesB:
-                            self.eyeR.append(self.head.create_rectangle(self._cursor_pos + j * DOT_WIDTH,
+            for i, row in enumerate(EYES.get(eyes, ())):
+                for j, col in enumerate(row):
+                    if self.store.emotion == 'neutral' and self.durationEmotion <= 0:
+                        if col:
+                            self._cursor_pos = self.guiProp.width * 0.30 - DOT_WIDTH * 7 / 2
+                            self._line_pos = self.guiProp.height * 0.5 - DOT_HEIGHT * 7 / 2
+                            self.eyeL.append(self.head.create_rectangle(self._cursor_pos + j * DOT_WIDTH,
                                                                         self._line_pos + i * DOT_HEIGHT,
                                                                         self._cursor_pos + (j + 1) * DOT_WIDTH,
                                                                         self._line_pos + (i + 1) * DOT_HEIGHT,
                                                                         fill='#60b6d5'
                                                                         ))
 
-        if eyes != eyesB:
-            for i, row in enumerate(EYES.get(eyesB, ())):
-                for j, col in enumerate(row):
-                    if col:
-                        self._cursor_pos = self.guiProp.width * 0.70 - DOT_WIDTH * 7 / 2
-                        self.eyeR.append(self.head.create_rectangle(self._cursor_pos + j * DOT_WIDTH,
-                                                                    self._line_pos + i * DOT_HEIGHT,
-                                                                    self._cursor_pos + (j + 1) * DOT_WIDTH,
-                                                                    self._line_pos + (i + 1) * DOT_HEIGHT,
-                                                                    fill='#60b6d5'))
+                            self._cursor_pos = self.guiProp.width * 0.70 - DOT_WIDTH * 7 / 2
+
+                            self.eyeR.append(self.head.create_rectangle(self._cursor_pos + j * DOT_WIDTH,
+                                                                        self._line_pos + i * DOT_HEIGHT,
+                                                                        self._cursor_pos + (j + 1) * DOT_WIDTH,
+                                                                        self._line_pos + (i + 1) * DOT_HEIGHT,
+                                                                        fill='#60b6d5'
+                                                                        ))
+                    else:
+                        self.durationEmotion -= lastDuration
+                        if self.durationEmotion <= 0:
+                            self.store.emotion = "neutral"
+                            self.store.resetEmotion = True
+
+                        if col:
+                            self._cursor_pos = self.guiProp.width * 0.30 - DOT_WIDTH * 7 / 2
+                            self._line_pos = self.guiProp.height * 0.5 - DOT_HEIGHT * 7 / 2
+                            self.eyeL.append(self.head.create_rectangle(self._cursor_pos + j * DOT_WIDTH,
+                                                                        self._line_pos + i * DOT_HEIGHT,
+                                                                        self._cursor_pos + (j + 1) * DOT_WIDTH,
+                                                                        self._line_pos + (i + 1) * DOT_HEIGHT,
+                                                                        fill='#60b6d5'
+                                                                        ))
+
+                            self._cursor_pos = self.guiProp.width * 0.70 - DOT_WIDTH * 7 / 2
+                            if eyes == eyesB:
+                                self.eyeR.append(self.head.create_rectangle(self._cursor_pos + j * DOT_WIDTH,
+                                                                            self._line_pos + i * DOT_HEIGHT,
+                                                                            self._cursor_pos + (j + 1) * DOT_WIDTH,
+                                                                            self._line_pos + (i + 1) * DOT_HEIGHT,
+                                                                            fill='#60b6d5'
+                                                                            ))
+            if eyes != eyesB:
+                for i, row in enumerate(EYES.get(eyesB, ())):
+                    for j, col in enumerate(row):
+                        if col:
+                            self._cursor_pos = self.guiProp.width * 0.70 - DOT_WIDTH * 7 / 2
+                            self.eyeR.append(self.head.create_rectangle(self._cursor_pos + j * DOT_WIDTH,
+                                                                        self._line_pos + i * DOT_HEIGHT,
+                                                                        self._cursor_pos + (j + 1) * DOT_WIDTH,
+                                                                        self._line_pos + (i + 1) * DOT_HEIGHT,
+                                                                        fill='#60b6d5'))
+
+
 
     def resetRectangle(self):
         self.head.delete("all")
         self.eyeL[:] = []
         self.eyeR[:] = []
+
+    def delPupille(self):
+        self.head.delete(self.eyeL[-1])
+        self.head.delete(self.eyeR[-1])
+
+    def drawPupille(self, bool):
+        # On rempli un carré pour chaque yeux
+        if bool:
+            self.delPupille()
+        pupillePos = self.calculPupille()
+        j = pupillePos['x']
+        i = pupillePos['y']
+        self._cursor_pos = self.guiProp.width * 0.30 - DOT_WIDTH * 7 / 2
+        self._line_pos = self.guiProp.height * 0.5 - DOT_HEIGHT * 7 / 2
+        self.eyeL.append(self.head.create_rectangle(self._cursor_pos + j * DOT_WIDTH,
+                                   self._line_pos + i * DOT_HEIGHT,
+                                   self._cursor_pos + (j + 1) * DOT_WIDTH,
+                                   self._line_pos + (i + 1) * DOT_HEIGHT,
+                                   fill='#000000'
+                                   ))
+        self._cursor_pos = self.guiProp.width * 0.70 - DOT_WIDTH * 7 / 2
+        self.eyeR.append(self.head.create_rectangle(self._cursor_pos + j * DOT_WIDTH,
+                                    self._line_pos + i * DOT_HEIGHT,
+                                    self._cursor_pos + (j + 1) * DOT_WIDTH,
+                                    self._line_pos + (i + 1) * DOT_HEIGHT,
+                                    fill='#000000'
+                                    ))
+
+
 
     def rightEye(self):
         e = self.store.emotion
