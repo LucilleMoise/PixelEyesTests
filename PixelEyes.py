@@ -137,11 +137,11 @@ class PixelEyes:
         # self.pointer = StringVar()
         self.guiProp = GuiConfig()
         self.store = ArthurStore()
+        self.percentOffsetX = 1.84
+        self.percentOffsetY = 1.84
         self._initWindow()
         self._initCanvas()
         self._initEyes()
-        self.percentOffsetX = 1.84
-        self.percentOffsetY = 1.84
         self.durationEmotion = 0
 
     def quit(self):
@@ -159,6 +159,8 @@ class PixelEyes:
             bg=self.guiProp.backgroundColor
         )
         self.head.pack()
+
+        # Pour affichage dans GUI des positions etc
         self.pointer = StringVar()
         t = Label(self.window, textvariable=self.pointer, fg="red")
         t.pack()
@@ -172,15 +174,13 @@ class PixelEyes:
         if keyboard.is_pressed('c'):
             print("Change emotion")
             self.durationEmotion = 10
-            self.store.emotion = 'sadness'
+            self.store.emotion = 'happiness'
 
     def refresh(self, lastDuration):
         if self.store.resetEyes:
             self.reset()
             self.store.resetEyes = False
         self.drawPupille(True)
-        #self.delPupille()
-        #self.resetRectangle()
         self.changeExpression(lastDuration)
         if self.store.resetEmotion:
             self.resetRectangle()
@@ -201,8 +201,11 @@ class PixelEyes:
         self.eyeR = []
         self.diff = self.rightEye()
         self.changeExpression(0)
+
+        # Pour affichage
         frame = Frame(self.window)
         frame.pack()
+
         eyes = self.store.emotion
         eyesB = self.rightEye()
         for i, row in enumerate(EYES.get(eyes, ())):
@@ -226,7 +229,7 @@ class PixelEyes:
                                                                     fill='#60b6d5'
                                                                     ))
         if eyes != eyesB:
-            for i, row in enumerate(EYES.get("AngryB", ())):
+            for i, row in enumerate(EYES.get(eyesB, ())):
                 for j, col in enumerate(row):
                     if col:
                         self._cursor_pos = prop.width * 0.70 - DOT_WIDTH * 7 / 2
@@ -288,6 +291,8 @@ class PixelEyes:
 
     def changeExpression(self, lastDuration):
         self.changeEmotion()
+
+        #Pour affichage
         pupillePos = self.calculPupille()
 
         self.pointer.set(str(self.window.winfo_pointerx())
@@ -299,6 +304,7 @@ class PixelEyes:
                          + str(self.guiProp.height)
                          )
         self.posPupille.set(str(pupillePos['x']) + " " + str(pupillePos['y']))
+
         eyes = self.store.emotion
         eyesB = self.rightEye()
 
