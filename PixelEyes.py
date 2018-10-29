@@ -181,7 +181,9 @@ class PixelEyes:
             self.reset()
             self.store.resetEyes = False
         self.drawPupille(True)
-        self.changeExpression(lastDuration)
+        if self.store.emotion != 'neutral':
+            self.changeExpression(lastDuration)
+        self.changeEmotion()
         if self.store.resetEmotion:
             self.resetRectangle()
             self._initEyes()
@@ -290,8 +292,8 @@ class PixelEyes:
         return {'x': xEyePos, 'y': yEyePos}
 
     def changeExpression(self, lastDuration):
-        self.changeEmotion()
-
+        #self.changeEmotion()
+        print("Bouh")
         #Pour affichage
         pupillePos = self.calculPupille()
 

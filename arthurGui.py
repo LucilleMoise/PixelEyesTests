@@ -21,7 +21,7 @@ class ArthurGui(Thread):
     def run(self):
         while self.isRun:
             start = time.time()
-            self.store.emotion = 'neutral'
+            #self.store.emotion = 'neutral'
             self.eyes.refresh(self.lastDuration)
             self.lastDuration = time.time() - start
             time.sleep(max(1. / 14 - self.lastDuration, 0))
